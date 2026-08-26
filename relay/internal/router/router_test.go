@@ -88,3 +88,23 @@ func TestRouter_Route(t *testing.T) {
 		t.Fatalf("expected c1 after recovery, got %v", c.Name)
 	}
 }
+
+func TestRouter_DeterministicSort(t *testing.T) {
+	clk := &mockClock{now: time.Now()}
+	r := NewRouter(clk)
+
+	candidates := []Candidate{
+		{Name: "B", Provider: "p2", CostPer1K: 0.01, P50Millis: 100, Weight: 1.0},
+		{Name: "A", Provider: "p1", CostPer1K: 0.01, P50Millis: 100, Weight: 1.0},
+	}
+	
+	// Both have exactly the same score
+	c, err := r.Route(context.Background(), "test", candidates)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if c.Name != "A" {
+		t.Fatalf("expected 'A' due to tie-breaker, got %v", c.Name)
+	}
+}
+

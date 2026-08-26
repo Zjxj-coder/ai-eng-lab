@@ -37,6 +37,30 @@ func TestAgreement(t *testing.T) {
 	}
 }
 
+func TestAgreement_Empty(t *testing.T) {
+	judge := &mockJudge{}
+	human := &HumanSpotCheck{Records: map[string]bool{}}
+	if rate := Agreement(judge, human); rate != 0.0 {
+		t.Errorf("expected 0.0 for empty samples, got %v", rate)
+	}
+}
+
+func TestAgreement_AllAgree(t *testing.T) {
+	judge := &mockJudge{results: map[string]bool{"1": true, "2": false}}
+	human := &HumanSpotCheck{Records: map[string]bool{"1": true, "2": false}}
+	if rate := Agreement(judge, human); rate != 1.0 {
+		t.Errorf("expected 1.0 for all agree, got %v", rate)
+	}
+}
+
+func TestAgreement_AllDisagree(t *testing.T) {
+	judge := &mockJudge{results: map[string]bool{"1": false, "2": true}}
+	human := &HumanSpotCheck{Records: map[string]bool{"1": true, "2": false}}
+	if rate := Agreement(judge, human); rate != 0.0 {
+		t.Errorf("expected 0.0 for all disagree, got %v", rate)
+	}
+}
+
 func TestUpdateRouterWeights(t *testing.T) {
 	report := &Report{
 		ModelMetrics: map[string]Metrics{

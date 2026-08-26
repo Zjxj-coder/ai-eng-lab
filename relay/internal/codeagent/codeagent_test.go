@@ -101,3 +101,27 @@ func TestApplyAndGate_RejectDeleteAssertion(t *testing.T) {
 		t.Errorf("expected Rejected_TouchedTests, got %v", res)
 	}
 }
+
+func TestApplyAndGate_CaseInsensitive(t *testing.T) {
+	patch := `--- a/Foo_Test.go
++++ b/Foo_Test.go
+@@ -1 +1 @@
+`
+	repo := &mockRepo{failTests: false}
+	res, _ := ApplyAndGate(repo, patch)
+	if res != Rejected_TouchedTests {
+		t.Errorf("expected Rejected_TouchedTests for Foo_Test.go, got %v", res)
+	}
+}
+
+func TestApplyAndGate_InternalTests(t *testing.T) {
+	patch := `--- a/internal/tests/x.go
++++ b/internal/tests/x.go
+@@ -1 +1 @@
+`
+	repo := &mockRepo{failTests: false}
+	res, _ := ApplyAndGate(repo, patch)
+	if res != Rejected_TouchedTests {
+		t.Errorf("expected Rejected_TouchedTests for internal/tests/x.go, got %v", res)
+	}
+}

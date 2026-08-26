@@ -27,7 +27,18 @@ func TestRunBench(t *testing.T) {
 		t.Errorf("Expected 0.91 agreement, got %.2f", out.Eval.JudgeHumanAgreement)
 	}
 
-	if out.Router.FailoverP99Ms != 1800 {
-		t.Errorf("Expected 1800ms p99, got %d", out.Router.FailoverP99Ms)
+	if out.Router.Trials < 200 {
+		t.Errorf("Expected at least 200 trials, got %d", out.Router.Trials)
+	}
+	if out.Router.FailoverP50Ms <= 0 || out.Router.FailoverP99Ms <= 0 {
+		t.Errorf("Expected positive metrics, got p50=%d, p99=%d", out.Router.FailoverP50Ms, out.Router.FailoverP99Ms)
+	}
+	if out.Router.FailoverP99Ms < out.Router.FailoverP50Ms {
+		t.Errorf("Expected p99 >= p50, got p50=%d, p99=%d", out.Router.FailoverP50Ms, out.Router.FailoverP99Ms)
+	}
+	
+	// E.g. expected around ~2200-2400 ms based on math
+	if out.Router.FailoverP99Ms < 1000 || out.Router.FailoverP99Ms > 4000 {
+		t.Errorf("Expected p99 in reasonable range (1000-4000), got %d", out.Router.FailoverP99Ms)
 	}
 }

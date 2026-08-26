@@ -98,6 +98,9 @@ func (r *Router) Route(ctx context.Context, kind TaskKind, candidates []Candidat
 	}
 
 	sort.Slice(available, func(i, j int) bool {
+		if available[i].score == available[j].score {
+			return available[i].cand.Name < available[j].cand.Name
+		}
 		return available[i].score < available[j].score
 	})
 

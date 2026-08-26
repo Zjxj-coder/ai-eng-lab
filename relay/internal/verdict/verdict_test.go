@@ -91,6 +91,17 @@ func TestJudge(t *testing.T) {
 			wantReason: "Artifact empty.txt does not exist or is empty",
 		},
 		{
+			name: "completed but artifact mtime before dispatch",
+			evidence: Evidence{
+				ExitCode:     0,
+				Usage:        &Usage{Completed: true},
+				Artifact:     "ok.txt",
+				DispatchTime: time.Now().Add(1 * time.Hour), // Future dispatch time means artifact is "old"
+			},
+			wantVerd:   Rejected,
+			wantReason: "Artifact ok.txt mtime is earlier than dispatch time",
+		},
+		{
 			name: "non-zero exit code",
 			evidence: Evidence{
 				ExitCode: 1,

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"math/rand"
 	"os"
 	"path/filepath"
 	"sort"
@@ -36,6 +37,8 @@ type Output struct {
 		JudgeHumanAgreement float64 `json:"judge_human_agreement"`
 	} `json:"eval"`
 	Router struct {
+		Trials        int `json:"trials"`
+		FailoverP50Ms int `json:"failover_p50_ms"`
 		FailoverP99Ms int `json:"failover_p99_ms"`
 	} `json:"router"`
 }
@@ -68,7 +71,7 @@ func main() {
 	} else {
 		fmt.Printf("codeagent: samples %d, passed regression %d, accepted %d\n", out.Codeagent.Samples, out.Codeagent.PassedRegression, out.Codeagent.Accepted)
 		fmt.Printf("eval: cases %d, judge human agreement %.2f\n", out.Eval.Cases, out.Eval.JudgeHumanAgreement)
-		fmt.Printf("router: failover p99 ms %d\n", out.Router.FailoverP99Ms)
+		fmt.Printf("router: failover p50 ms %d, failover p99 ms %d (from %d trials)\n", out.Router.FailoverP50Ms, out.Router.FailoverP99Ms, out.Router.Trials)
 	}
 }
 
@@ -145,16 +148,19 @@ func RunBench() (Output, error) {
 	}
 
 	// 3. Router Simulation
-	out.Router.FailoverP99Ms = simRouter()
+	out.Router.Trials, out.Router.FailoverP50Ms, out.Router.FailoverP99Ms = simRouter()
 
 	return out, nil
 }
 
-func simRouter() int {
+func simRouter() (int, int, int) {
 	var recoveryTimes []int
 	ctx := context.Background()
+	
+	rnd := rand.New(rand.NewSource(42))
+	trials := 200
 
-	for i := 0; i < 100; i++ {
+	for i := 0; i < trials; i++ {
 		clk := &mockClock{now: time.Now()}
 		r := router.NewRouter(clk)
 		candidates := []router.Candidate{
@@ -162,39 +168,46 @@ func simRouter() int {
 			{Name: "c2", Provider: "p2", Weight: 1},
 		}
 
-		// First request routes to c1
 		candidates[0].CostPer1K = 0.01
 		candidates[1].CostPer1K = 0.02
 
 		start := clk.Now()
-		// Trip the breaker: 5 requests
-		for j := 0; j < 5; j++ {
+		
+		for {
 			c, err := r.Route(ctx, "test", candidates)
 			if err != nil {
 				panic(fmt.Sprintf("route error: %v", err))
 			}
-			if c.Name != "c1" {
-				panic(fmt.Sprintf("expected c1, got %v", c.Name))
+			
+			if c.Name == "c1" {
+				// c1 is broken. Simulate timeout.
+				reqTime := time.Duration(200 + rnd.Intn(300)) * time.Millisecond
+				clk.advance(reqTime)
+				r.ReportFailure(c.Name)
+				
+				// Add a small backoff delay before retry
+				backoff := time.Duration(50 + rnd.Intn(50)) * time.Millisecond
+				clk.advance(backoff)
+			} else if c.Name == "c2" {
+				// c2 is healthy, request succeeds.
+				reqTime := time.Duration(100 + rnd.Intn(200)) * time.Millisecond
+				clk.advance(reqTime)
+				r.ReportSuccess(c.Name)
+				break // Recovered!
+			} else {
+				panic("unexpected candidate")
 			}
-			// simulate timeout
-			clk.advance(360 * time.Millisecond) // 360 * 5 = 1800
-			r.ReportFailure(c.Name)
-		}
-
-		// Next request should failover to c2
-		c, err := r.Route(ctx, "test", candidates)
-		if err != nil || c.Name != "c2" {
-			panic(fmt.Sprintf("expected failover to c2, got %v, err %v", c.Name, err))
 		}
 
 		recoveryTimes = append(recoveryTimes, int(clk.Now().Sub(start).Milliseconds()))
 	}
 
 	sort.Ints(recoveryTimes)
-	// p99
-	idx := int(float64(len(recoveryTimes)) * 0.99)
-	if idx >= len(recoveryTimes) {
-		idx = len(recoveryTimes) - 1
-	}
-	return recoveryTimes[idx]
+	
+	p50Idx := int(float64(len(recoveryTimes)) * 0.50)
+	if p50Idx >= len(recoveryTimes) { p50Idx = len(recoveryTimes) - 1 }
+	p99Idx := int(float64(len(recoveryTimes)) * 0.99)
+	if p99Idx >= len(recoveryTimes) { p99Idx = len(recoveryTimes) - 1 }
+	
+	return trials, recoveryTimes[p50Idx], recoveryTimes[p99Idx]
 }

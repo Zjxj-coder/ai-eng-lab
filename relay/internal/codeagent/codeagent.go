@@ -28,7 +28,8 @@ func ApplyAndGate(repo Repo, patch string) (Result, error) {
 			path := strings.TrimPrefix(line[4:], "b/")
 			path = strings.TrimPrefix(path, "a/")
 			path = strings.TrimSpace(path)
-			if strings.HasSuffix(path, "_test.go") || strings.Contains(path, "/test/") || strings.Contains(path, "/tests/") || strings.HasPrefix(path, "test/") || strings.HasPrefix(path, "tests/") {
+			lowerPath := strings.ToLower(path)
+			if strings.HasSuffix(lowerPath, "_test.go") || strings.Contains(lowerPath, "/test/") || strings.Contains(lowerPath, "/tests/") || strings.HasPrefix(lowerPath, "test/") || strings.HasPrefix(lowerPath, "tests/") {
 				return Rejected_TouchedTests, nil
 			}
 		}

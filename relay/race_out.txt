@@ -1,7 +1,0 @@
-ok  	github.com/guojunhao/ai-eng-lab/relay/cmd/bench	2.242s
-ok  	github.com/guojunhao/ai-eng-lab/relay/cmd/relay	(cached)
-ok  	github.com/guojunhao/ai-eng-lab/relay/internal/codeagent	(cached)
-ok  	github.com/guojunhao/ai-eng-lab/relay/internal/eval	(cached)
-ok  	github.com/guojunhao/ai-eng-lab/relay/internal/provider	(cached)
-ok  	github.com/guojunhao/ai-eng-lab/relay/internal/router	2.025s
-ok  	github.com/guojunhao/ai-eng-lab/relay/internal/verdict	(cached)

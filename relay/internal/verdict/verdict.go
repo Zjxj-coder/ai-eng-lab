@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 )
 
 // Verdict is the result of a judgment.
@@ -30,11 +31,12 @@ type Usage struct {
 
 // Evidence represents the output of a task.
 type Evidence struct {
-	ExitCode int
-	Stdout   string
-	Stderr   string
-	Usage    *Usage
-	Artifact string
+	ExitCode     int
+	Stdout       string
+	Stderr       string
+	Usage        *Usage
+	Artifact     string
+	DispatchTime time.Time
 }
 
 // OSStat defines an interface for os.Stat for testability.
@@ -57,7 +59,7 @@ func Judge(ev Evidence) (Verdict, []Reason) {
 		reasons = append(reasons, Reason{Message: "Stdout contains error information"})
 	}
 
-	// 3. Usage.Completed==true but Artifact doesn't exist or size 0
+	// 3. Usage.Completed==true but Artifact doesn't exist, size 0, or mtime before dispatch
 	if ev.Usage != nil && ev.Usage.Completed {
 		if ev.Artifact == "" {
 			reasons = append(reasons, Reason{Message: "Usage completed but no artifact specified"})
@@ -65,6 +67,8 @@ func Judge(ev Evidence) (Verdict, []Reason) {
 			info, err := statFunc(ev.Artifact)
 			if err != nil || info.Size() == 0 {
 				reasons = append(reasons, Reason{Message: fmt.Sprintf("Artifact %s does not exist or is empty", ev.Artifact)})
+			} else if !ev.DispatchTime.IsZero() && info.ModTime().Before(ev.DispatchTime) {
+				reasons = append(reasons, Reason{Message: fmt.Sprintf("Artifact %s mtime is earlier than dispatch time", ev.Artifact)})
 			}
 		}
 	}
