@@ -1,0 +1,80 @@
+=== RUN   TestRunBench
+--- PASS: TestRunBench (0.00s)
+PASS
+ok  	github.com/guojunhao/ai-eng-lab/relay/cmd/bench	1.036s
+=== RUN   TestRelayInit
+--- PASS: TestRelayInit (0.00s)
+=== RUN   TestRelayParseArgs
+--- PASS: TestRelayParseArgs (0.00s)
+=== RUN   TestRelayDispatch
+--- PASS: TestRelayDispatch (0.00s)
+=== RUN   TestRelayRoute
+--- PASS: TestRelayRoute (0.00s)
+=== RUN   TestRelayAccept
+--- PASS: TestRelayAccept (0.00s)
+=== RUN   TestRelayReject
+--- PASS: TestRelayReject (0.00s)
+=== RUN   TestRelayFallback
+--- PASS: TestRelayFallback (0.00s)
+=== RUN   TestRelayConfig
+--- PASS: TestRelayConfig (0.00s)
+=== RUN   TestRelayOutput
+--- PASS: TestRelayOutput (0.00s)
+=== RUN   TestRelayError
+--- PASS: TestRelayError (0.00s)
+PASS
+ok  	github.com/guojunhao/ai-eng-lab/relay/cmd/relay	0.942s
+=== RUN   TestApplyAndGate
+=== RUN   TestApplyAndGate/valid_patch
+=== RUN   TestApplyAndGate/patch_touches_test_file_(_test.go)
+=== RUN   TestApplyAndGate/patch_touches_tests_directory
+=== RUN   TestApplyAndGate/tests_fail_after_patch
+--- PASS: TestApplyAndGate (0.00s)
+    --- PASS: TestApplyAndGate/valid_patch (0.00s)
+    --- PASS: TestApplyAndGate/patch_touches_test_file_(_test.go) (0.00s)
+    --- PASS: TestApplyAndGate/patch_touches_tests_directory (0.00s)
+    --- PASS: TestApplyAndGate/tests_fail_after_patch (0.00s)
+=== RUN   TestApplyAndGate_RejectDeleteAssertion
+--- PASS: TestApplyAndGate_RejectDeleteAssertion (0.00s)
+PASS
+ok  	github.com/guojunhao/ai-eng-lab/relay/internal/codeagent	0.944s
+=== RUN   TestAgreement
+--- PASS: TestAgreement (0.00s)
+=== RUN   TestUpdateRouterWeights
+--- PASS: TestUpdateRouterWeights (0.00s)
+PASS
+ok  	github.com/guojunhao/ai-eng-lab/relay/internal/eval	0.952s
+=== RUN   TestMockProvider
+--- PASS: TestMockProvider (0.00s)
+PASS
+ok  	github.com/guojunhao/ai-eng-lab/relay/internal/provider	0.942s
+=== RUN   TestCircuitBreaker_StateTransitions
+--- PASS: TestCircuitBreaker_StateTransitions (0.00s)
+=== RUN   TestCircuitBreaker_SlidingWindow
+--- PASS: TestCircuitBreaker_SlidingWindow (0.00s)
+=== RUN   TestScore
+=== RUN   TestScore/normal
+=== RUN   TestScore/zero_weight
+--- PASS: TestScore (0.00s)
+    --- PASS: TestScore/normal (0.00s)
+    --- PASS: TestScore/zero_weight (0.00s)
+=== RUN   TestRouter_Route
+--- PASS: TestRouter_Route (0.00s)
+PASS
+ok  	github.com/guojunhao/ai-eng-lab/relay/internal/router	0.946s
+=== RUN   TestJudge
+=== RUN   TestJudge/ok
+=== RUN   TestJudge/exit_0_but_failed
+=== RUN   TestJudge/stdout_contains_error
+=== RUN   TestJudge/completed_but_artifact_missing
+=== RUN   TestJudge/completed_but_artifact_empty
+=== RUN   TestJudge/non-zero_exit_code
+--- PASS: TestJudge (0.00s)
+    --- PASS: TestJudge/ok (0.00s)
+    --- PASS: TestJudge/exit_0_but_failed (0.00s)
+    --- PASS: TestJudge/stdout_contains_error (0.00s)
+    --- PASS: TestJudge/completed_but_artifact_missing (0.00s)
+    --- PASS: TestJudge/completed_but_artifact_empty (0.00s)
+    --- PASS: TestJudge/non-zero_exit_code (0.00s)
+PASS
+ok  	github.com/guojunhao/ai-eng-lab/relay/internal/verdict	0.942s

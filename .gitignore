@@ -1,0 +1,34 @@
+# build output
+*.exe
+*.dll
+*.so
+*.dylib
+/relay/bin/
+/nexus/bin/
+/sibyl/dist/
+
+# go
+*.test
+*.out
+/vendor/
+
+# python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# editors / os
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# never commit credentials or personal documents
+*.pem
+*.key
+.env
+.env.*
+*证件照*
+*简历*.pdf
