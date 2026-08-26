@@ -32,3 +32,9 @@ desktop.ini
 .env.*
 *证件照*
 *简历*.pdf
+
+bench_output.json
+bench*.txt
+bench*.json
+bench*.log
+race*.log
