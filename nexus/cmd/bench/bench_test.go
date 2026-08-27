@@ -198,11 +198,25 @@ func TestFastPathOverhead_Boundary(t *testing.T) {
 		return
 	}
 	
+	// `overhead >= 0` would be vacuous -- time.Since never returns a negative
+	// duration, so that assertion can never fail and therefore tests nothing.
+	// The property worth holding is ordering: a handler that does no work must
+	// measure below one that busy-waits 200us, otherwise the timer is not
+	// tracking the work at all.
+	busy := func() time.Duration {
+		start := time.Now()
+		t0 := time.Now()
+		for time.Since(t0) < 200*time.Microsecond {
+		}
+		return time.Since(start)
+	}
+
 	req, _ := http.NewRequest("GET", "/", nil)
-	rr := httptest.NewRecorder()
-	overhead := handlerFunc(req, rr)
-	
-	if overhead < 0 {
-		t.Errorf("Expected overhead >= 0 for boundary, got %v", overhead)
+	idle := handlerFunc(req, httptest.NewRecorder())
+	worked := busy()
+
+	if idle >= worked {
+		t.Errorf("no-work handler measured %v, busy-wait measured %v: "+
+			"the timer is not tracking work", idle, worked)
 	}
 }

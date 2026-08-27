@@ -66,34 +66,31 @@ func TestSSEDisconnect(t *testing.T) {
 	}
 }
 
-func TestSSEFlusher(t *testing.T) {
-    // httptest.ResponseRecorder does not implement http.Flusher prior to Go 1.20?
-    // Actually it doesn't implement it in a way that blocks HandleSSE from returning "Streaming unsupported" if we use a mock.
-    // wait, NewRecorder doesn't implement Flusher? Actually it does. Let's verify.
-    // Wait, let's just make 3 more basic tests to hit 8.
-}
-
-func TestTraceFormat(t *testing.T) {
-    dp := NewDataPoint(10, "sql", "def")
-    if dp.Trace.SQL != "sql" { t.Fail() }
-}
-
-func TestTraceFormat2(t *testing.T) {
-    dp := NewDataPoint(10, "sql", "def")
-    if dp.Trace.MetricDef != "def" { t.Fail() }
-}
-
-func TestTraceFormat3(t *testing.T) {
-    dp := NewDataPoint(10, "sql", "def")
-    if dp.Value != 10 { t.Fail() }
-}
-
-func TestTraceFormat4(t *testing.T) {
-    dp := NewDataPoint("val", "sql", "def")
-    if dp.Value != "val" { t.Fail() }
-}
-
-func TestTraceFormat5(t *testing.T) {
-    dp := NewDataPoint(true, "sql", "def")
-    if dp.Value != true { t.Fail() }
+// Every figure the UI shows has to name the SQL and the metric definition that
+// produced it -- a number a planner cannot trace back is a number they cannot
+// act on. One table covers the value types the gateway actually carries.
+func TestDataPointCarriesItsProvenance(t *testing.T) {
+	for _, tc := range []struct {
+		name  string
+		value interface{}
+	}{
+		{"int", 10},
+		{"string", "val"},
+		{"bool", true},
+		{"float", 12.5},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			dp := NewDataPoint(tc.value, "SELECT 1", "dau=count(distinct uid)")
+			if dp.Value != tc.value {
+				t.Errorf("value: got %v (%T), want %v (%T)",
+					dp.Value, dp.Value, tc.value, tc.value)
+			}
+			if dp.Trace.SQL != "SELECT 1" {
+				t.Errorf("trace.SQL lost: got %q", dp.Trace.SQL)
+			}
+			if dp.Trace.MetricDef != "dau=count(distinct uid)" {
+				t.Errorf("trace.MetricDef lost: got %q", dp.Trace.MetricDef)
+			}
+		})
+	}
 }
