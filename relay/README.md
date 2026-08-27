@@ -93,9 +93,28 @@ ok  	github.com/guojunhao/ai-eng-lab/relay/internal/verdict	0.942s
 
 ### \`go run ./cmd/bench -json\`
 
+<!-- BENCH:BEGIN -->
+> 以下 JSON 由 `go run ./cmd/bench -json` 现场产出，每次改动后由脚本重新粘贴，不手工维护。
+
 ```json
-{"codeagent":{"samples":120,"passed_regression":89,"accepted":61},"eval":{"cases":300,"judge_human_agreement":0.91},"router":{"failover_p99_ms":1800}}
+{
+  "codeagent": {
+    "samples": 120,
+    "passed_regression": 89,
+    "accepted": 61
+  },
+  "eval": {
+    "cases": 300,
+    "judge_human_agreement": 0.91
+  },
+  "router": {
+    "trials": 200,
+    "failover_p50_ms": 2327,
+    "failover_p99_ms": 2801
+  }
+}
 ```
+<!-- BENCH:END -->
 
 ## 弱判据 vs 强判据
 
