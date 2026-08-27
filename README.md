@@ -1,4 +1,5 @@
 # ai-eng-lab
+[![CI](https://github.com/Zjxj-coder/ai-eng-lab/actions/workflows/ci.yml/badge.svg)](https://github.com/Zjxj-coder/ai-eng-lab/actions/workflows/ci.yml)
 
 郭俊豪（哈尔滨理工大学 · 计算机科学与技术 · 2027 届）的 AI 应用工程实践仓库。
 
