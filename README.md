@@ -2,8 +2,8 @@
 
 郭俊豪（哈尔滨理工大学 · 计算机科学与技术 · 2027 届）的 AI 应用工程实践仓库。
 
-**在线作品页 → https://guojunhao-dev.github.io/ai-eng-lab/**
-（部署后请把上面这行的用户名替换成你自己的 GitHub 用户名）
+**在线作品页 → https://Zjxj-coder.github.io/ai-eng-lab/**
+
 
 ---
 
@@ -57,4 +57,6 @@ cd relay && go test ./... -count=1 && go run ./cmd/bench -json
 
 ## 联系
 
-郭俊豪 · 13612968645 · 13612968645@163.com
+郭俊豪 · 13612968645 · 13612968645@163.com · https://github.com/Zjxj-coder/ai-eng-lab
+
+

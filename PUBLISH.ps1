@@ -9,7 +9,7 @@
 #  所以这里只把流程压到一条命令，认证那一步由 gh 打开浏览器让你自己完成。
 # =============================================================================
 param(
-    [Parameter(Mandatory = $true)][string]$User,
+    [string]$User = 'Zjxj-coder',
     [string]$Repo = 'ai-eng-lab',
     [switch]$Private
 )
